@@ -3,7 +3,6 @@ package com.example.helpdeath2;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.icu.text.UnicodeSetSpanner;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,13 +11,17 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import java.lang.Math;
+
 
 public class MainActivity extends AppCompatActivity {
     EditText correct, guess;
     TextView result;
     Button submit, check;
     LinearLayout bg;
+
+    public static final String mypref = "MyPrefs";
+    SharedPreferences sh;
+    int correctage;
     int x = 0, c = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,25 +34,26 @@ public class MainActivity extends AppCompatActivity {
         submit = (Button) findViewById(R.id.button);
         check = (Button) findViewById(R.id.button2);
         bg = (LinearLayout) findViewById(R.id.back);
+
+        sh = getSharedPreferences(mypref, Context.MODE_PRIVATE);
+
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int correctage = getAge();
-
+                correctage = getAge();
+                SharedPreferences.Editor editor = sh.edit();
+                editor.putInt(getString(R.string.app_name), correctage);
+                editor.apply();
                 Toast.makeText(getApplicationContext(),"Correct age saved",Toast.LENGTH_LONG).show();
 
             }
         });
+        
 
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                int correctage = getAge();
-                SharedPreferences sh = getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sh.edit();
-                editor.putInt(getString(R.string.app_name), correctage);
-                editor.apply();
+                SharedPreferences sh = getSharedPreferences(mypref, Context.MODE_PRIVATE);
                 int z = sh.getInt("Help Death 2", correctage);
                 int guess = getGuess();
                 compare(z,guess);
@@ -61,20 +65,25 @@ public class MainActivity extends AppCompatActivity {
 
     public int getAge(){
     String corr = correct.getText().toString();
-    int a = Integer.parseInt(corr);
+    int a=0;
+    if(corr!=null && "".equals(corr)) {
+        int x = Integer.parseInt(corr);
+        a+=x;
+        }
     return a;
     }
 
     public int getGuess(){
         String corr = guess.getText().toString();
+
         int a = Integer.parseInt(corr);
         return a;
     }
 
     public void compare(int ca, int ga){
         String resultlabel = "";
-        SharedPreferences sh = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sh.edit();
+        SharedPreferences sh1 = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sh1.edit();
         if(ga>ca){
             resultlabel = "Your guess was wrong and it was more than correct age";
             result.setText(resultlabel);
