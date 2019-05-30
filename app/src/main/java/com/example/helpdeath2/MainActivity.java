@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.commit();
                 correct.setText("");
                 Toast.makeText(getApplicationContext(),"Correct age saved",Toast.LENGTH_LONG).show();
+                x=0;
 
             }
         });
