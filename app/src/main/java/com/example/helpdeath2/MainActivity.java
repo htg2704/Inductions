@@ -20,8 +20,10 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout bg;
 
     public static final String mypref = "MyPrefs";
+    public static final String c_age = "correctage";
     SharedPreferences sh;
     int correctage;
+    String cage;
     int x = 0, c = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,37 +42,38 @@ public class MainActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                correctage = getAge();
+                cage = getAge();
                 SharedPreferences.Editor editor = sh.edit();
-                editor.putInt(getString(R.string.app_name), correctage);
-                editor.apply();
+                editor.putString(c_age, cage);
+                editor.commit();
+                correct.setText("");
                 Toast.makeText(getApplicationContext(),"Correct age saved",Toast.LENGTH_LONG).show();
 
             }
         });
-        
+
 
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences sh = getSharedPreferences(mypref, Context.MODE_PRIVATE);
-                int z = sh.getInt("Help Death 2", correctage);
+                String z = sh.getString(c_age, "default");
+                int a = Integer.parseInt(z);
                 int guess = getGuess();
-                compare(z,guess);
+                compare(a,guess);
             }
         });
 
     }
 
 
-    public int getAge(){
+    public String getAge(){
     String corr = correct.getText().toString();
     int a=0;
     if(corr!=null && "".equals(corr)) {
         int x = Integer.parseInt(corr);
         a+=x;
         }
-    return a;
+    return corr;
     }
 
     public int getGuess(){
@@ -103,22 +106,26 @@ public class MainActivity extends AppCompatActivity {
             guess.setText("");
             c++;
             editor.putInt(getString(R.string.app_name), c);
-
-
+            bg.setBackgroundColor(Color.WHITE);
+            x=0;
         }
 
         if(ga!=ca){
             x++;
 
-            editor.putInt(getString(R.string.app_name), x);
+            editor.putInt("times", x);
             editor.apply();
-            int y = sh.getInt(getString(R.string.app_name), x);
+            int y = sh.getInt("times", x);
             if(y>4){
-                Toast.makeText(getApplicationContext(),"Game over for you, you failed " + x + " times",Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(),"Game over for you, you failed " + y + " times",Toast.LENGTH_LONG).show();
                 y=0;
+                x=0;
+                String z = sh.getString(c_age, "default");
+                int a = Integer.parseInt(z);
                 guess.setText("");
                 correct.setText("");
-                result.setText("Result will be shown here");
+                result.setText("The correct age was "+ a + " years\n"+"Submit new correct age to play again");
+                return;
             }
         int d;
             if((ga-ca)>=0)
