@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.inputmethod.InputMethodManager;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,13 +43,20 @@ public class MainActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
                 cage = getAge();
                 SharedPreferences.Editor editor = sh.edit();
-                editor.putString(c_age, cage);
-                editor.commit();
-                correct.setText("");
-                Toast.makeText(getApplicationContext(),"Correct age saved",Toast.LENGTH_LONG).show();
-                x=0;
+                if(cage!=null&&!"".equals(cage))
+                {
+                    editor.putString(c_age, cage);
+                    editor.commit();
+                    correct.setText("");
+                    Toast.makeText(getApplicationContext(),"Correct age saved",Toast.LENGTH_LONG).show();}
+                else{
+                    Toast.makeText(getApplicationContext(),"Please enter some age",Toast.LENGTH_LONG).show();
+                   }
+                    x=0;
 
             }
         });
@@ -57,10 +65,25 @@ public class MainActivity extends AppCompatActivity {
         check.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                im.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+                int a,Guess;
                 String z = sh.getString(c_age, "default");
-                int a = Integer.parseInt(z);
-                int guess = getGuess();
-                compare(a,guess);
+                String guess = getGuess();
+                if(z!=null&&!"".equals(z)){
+                    a = Integer.parseInt(z);
+                    if(guess!=null&&!"".equals(guess)){
+                        Guess = Integer.parseInt(guess);
+                        compare(a,Guess);
+                    }
+                    else
+                        Toast.makeText(getApplicationContext(),"Please enter some guess",Toast.LENGTH_LONG).show();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"Please enter correct age first",Toast.LENGTH_LONG).show();
+                }
+
+
             }
         });
 
@@ -69,19 +92,15 @@ public class MainActivity extends AppCompatActivity {
 
     public String getAge(){
     String corr = correct.getText().toString();
-    int a=0;
-    if(corr!=null && "".equals(corr)) {
-        int x = Integer.parseInt(corr);
-        a+=x;
-        }
+    /*int a=0;*/
+
     return corr;
     }
 
-    public int getGuess(){
+    public String getGuess(){
         String corr = guess.getText().toString();
 
-        int a = Integer.parseInt(corr);
-        return a;
+        return corr;
     }
 
     public void compare(int ca, int ga){
